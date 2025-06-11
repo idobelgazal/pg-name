@@ -1,61 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrimeGuard Admin Panel</title>
+  <title>PrimeGuard Admin</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white min-h-screen font-sans">
-  <div class="container mx-auto p-4">
-    <div id="login" class="max-w-md mx-auto mt-24 p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700">
-      <h1 class="text-3xl font-bold mb-6 text-center text-blue-400">🔐 PrimeGuard Login</h1>
-      <input type="email" id="email" placeholder="Email" class="w-full p-3 mb-4 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <input type="password" id="password" placeholder="Password" class="w-full p-3 mb-4 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <button onclick="login()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded font-semibold">Login</button>
+<body class="bg-gray-900 text-white font-sans p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold mb-4">PrimeGuard Admin Panel</h1>
+
+    <!-- Ban Management -->
+    <div class="bg-gray-800 p-6 rounded-xl mb-8">
+      <h2 class="text-2xl font-semibold mb-4">🚫 Ban a Player</h2>
+      <input id="banName" type="text" placeholder="Enter Player Name" class="w-full mb-3 p-2 rounded bg-gray-700">
+      <input id="banReason" type="text" placeholder="Reason for Ban" class="w-full mb-3 p-2 rounded bg-gray-700">
+      <button onclick="banPlayer()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Ban Player</button>
     </div>
 
-    <div id="dashboard" class="hidden">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-4xl font-bold">🚨 PrimeGuard Dashboard</h1>
-        <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Logout</button>
-      </div>
+    <!-- Unban Management -->
+    <div class="bg-gray-800 p-6 rounded-xl mb-8">
+      <h2 class="text-2xl font-semibold mb-4">✅ Unban a Player</h2>
+      <input id="unbanName" type="text" placeholder="Enter Player Name" class="w-full mb-3 p-2 rounded bg-gray-700">
+      <button onclick="unbanPlayer()" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Unban Player</button>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <p class="text-gray-400">Detected Today</p>
-          <p id="logCount" class="text-2xl font-bold text-green-400">0</p>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <p class="text-gray-400">Bans Today</p>
-          <p id="banCount" class="text-2xl font-bold text-red-400">0</p>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <p class="text-gray-400">Active Users</p>
-          <p id="activeUsers" class="text-2xl font-bold text-yellow-400">0</p>
-        </div>
-      </div>
-
-      <div class="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-        <h2 class="text-2xl font-semibold mb-4">📄 Latest Logs</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-gray-700">
-              <tr>
-                <th class="p-3">Player</th>
-                <th class="p-3">Type</th>
-                <th class="p-3">Time</th>
-                <th class="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody id="logsTable"></tbody>
-          </table>
-        </div>
-      </div>
+    <!-- List of Banned Players -->
+    <div class="bg-gray-800 p-6 rounded-xl">
+      <h2 class="text-2xl font-semibold mb-4">📋 Banned Players</h2>
+      <ul id="banList" class="space-y-2 text-sm"></ul>
     </div>
   </div>
 
@@ -71,50 +47,41 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
 
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("login").classList.add("hidden");
-          document.getElementById("dashboard").classList.remove("hidden");
-          loadLogs();
-        })
-        .catch((error) => alert("Login failed: " + error.message));
+    function banPlayer() {
+      const name = document.getElementById("banName").value;
+      const reason = document.getElementById("banReason").value;
+      if (name && reason) {
+        db.ref("bans/" + name).set({ reason, time: new Date().toLocaleString() });
+        alert(`${name} has been banned.`);
+        loadBans();
+      }
     }
 
-    function logout() {
-      auth.signOut().then(() => location.reload());
+    function unbanPlayer() {
+      const name = document.getElementById("unbanName").value;
+      if (name) {
+        db.ref("bans/" + name).remove();
+        alert(`${name} has been unbanned.`);
+        loadBans();
+      }
     }
 
-    function loadLogs() {
-      const logsRef = db.ref("logs");
-      logsRef.limitToLast(20).on("value", snapshot => {
-        const logs = snapshot.val();
-        const tbody = document.getElementById("logsTable");
-        tbody.innerHTML = "";
-        let count = 0;
-        const players = new Set();
-        for (const key in logs) {
-          const log = logs[key];
-          count++;
-          players.add(log.player);
-          tbody.innerHTML += `
-            <tr class="border-b border-gray-700 hover:bg-gray-700">
-              <td class="p-3">${log.player}</td>
-              <td class="p-3">${log.type}</td>
-              <td class="p-3">${log.time}</td>
-              <td class="p-3 text-sm text-red-400 font-bold">${log.action}</td>
-            </tr>`;
+    function loadBans() {
+      const list = document.getElementById("banList");
+      list.innerHTML = "";
+      db.ref("bans").once("value", snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          Object.keys(data).forEach(player => {
+            list.innerHTML += `<li class='bg-gray-700 p-2 rounded'>${player} - ${data[player].reason} <span class='text-gray-400'>(${data[player].time})</span></li>`;
+          });
         }
-        document.getElementById("logCount").textContent = count;
-        document.getElementById("banCount").textContent = Object.values(logs).filter(l => l.action.includes("ban")).length;
-        document.getElementById("activeUsers").textContent = players.size;
       });
     }
+
+    loadBans();
   </script>
 </body>
 </html>

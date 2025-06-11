@@ -1,1 +1,19 @@
-/* Optional style overrides */
+body {
+  background-color: #111827;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  padding: 20px;
+}
+
+input, button {
+  font-size: 16px;
+}
+
+button {
+  transition: background-color 0.3s ease;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
