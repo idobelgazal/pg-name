@@ -1,37 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrimeGuard Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrimeGuard Admin Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      width: 240px;
+      background-color: #1f2937;
+      height: 100vh;
+      padding: 1.5rem;
+    }
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      text-align: left;
+      margin-bottom: 1rem;
+      background-color: #374151;
+      color: white;
+      border-radius: 0.5rem;
+      font-weight: 600;
+    }
+    .sidebar button:hover {
+      background-color: #4b5563;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white font-sans p-6">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold mb-4">PrimeGuard Admin Panel</h1>
+<body class="bg-gray-900 text-white">
+  <div id="loginSection" class="p-6 max-w-md mx-auto">
+    <h2 class="text-2xl font-bold mb-4">Login to PrimeGuard</h2>
+    <input id="email" type="email" placeholder="Email" class="w-full mb-2 p-2 rounded bg-gray-700">
+    <input id="password" type="password" placeholder="Password" class="w-full mb-2 p-2 rounded bg-gray-700">
+    <button onclick="login()" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Login</button>
+    <p class="mt-4 text-sm">No account? <a href="#" onclick="register()" class="text-blue-400 underline">Register</a></p>
+  </div>
 
-    <!-- Ban Management -->
-    <div class="bg-gray-800 p-6 rounded-xl mb-8">
-      <h2 class="text-2xl font-semibold mb-4">🚫 Ban a Player</h2>
-      <input id="banName" type="text" placeholder="Enter Player Name" class="w-full mb-3 p-2 rounded bg-gray-700">
-      <input id="banReason" type="text" placeholder="Reason for Ban" class="w-full mb-3 p-2 rounded bg-gray-700">
-      <button onclick="banPlayer()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Ban Player</button>
+  <div class="flex hidden" id="dashboardSection">
+    <div class="sidebar">
+      <h1 class="text-2xl font-bold mb-6">PrimeGuard</h1>
+      <button onclick="showSection('dashboard')">Dashboard</button>
+      <button onclick="showSection('banLogs')">Ban Logs</button>
+      <button onclick="showSection('manageBans')">Manage Bans</button>
+      <button onclick="logout()">Logout</button>
     </div>
-
-    <!-- Unban Management -->
-    <div class="bg-gray-800 p-6 rounded-xl mb-8">
-      <h2 class="text-2xl font-semibold mb-4">✅ Unban a Player</h2>
-      <input id="unbanName" type="text" placeholder="Enter Player Name" class="w-full mb-3 p-2 rounded bg-gray-700">
-      <button onclick="unbanPlayer()" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Unban Player</button>
-    </div>
-
-    <!-- List of Banned Players -->
-    <div class="bg-gray-800 p-6 rounded-xl">
-      <h2 class="text-2xl font-semibold mb-4">📋 Banned Players</h2>
-      <ul id="banList" class="space-y-2 text-sm"></ul>
+    <div class="flex-1 p-6" id="mainContent">
+      <div id="dashboard"><h2 class="text-3xl font-bold mb-4">Welcome Admin</h2></div>
+      <div id="banLogs" class="hidden">
+        <h2 class="text-2xl font-semibold mb-4">Ban Logs</h2>
+        <ul id="banLogList" class="space-y-2 text-sm"></ul>
+      </div>
+      <div id="manageBans" class="hidden">
+        <h2 class="text-2xl font-semibold mb-4">Manage Player Bans</h2>
+        <input id="banName" type="text" placeholder="Player Name" class="w-full mb-2 p-2 rounded bg-gray-700">
+        <input id="banReason" type="text" placeholder="Reason for Ban" class="w-full mb-2 p-2 rounded bg-gray-700">
+        <button onclick="banPlayer()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Ban Player</button>
+        <hr class="my-6">
+        <input id="unbanName" type="text" placeholder="Player Name to Unban" class="w-full mb-2 p-2 rounded bg-gray-700">
+        <button onclick="unbanPlayer()" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Unban Player</button>
+      </div>
     </div>
   </div>
 
@@ -45,31 +76,63 @@
       messagingSenderId: "1082222345306",
       appId: "1:1082222345306:web:2f416498b469274a052c63"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('dashboardSection').classList.remove('hidden');
+      }
+    });
+
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(e => alert(e.message));
+    }
+
+    function register() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .catch(e => alert(e.message));
+    }
+
+    function logout() {
+      auth.signOut();
+      location.reload();
+    }
+
+    function showSection(section) {
+      ['dashboard', 'banLogs', 'manageBans'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(section).classList.remove('hidden');
+      if (section === 'banLogs') loadBanLogs();
+    }
 
     function banPlayer() {
-      const name = document.getElementById("banName").value;
-      const reason = document.getElementById("banReason").value;
+      const name = document.getElementById('banName').value;
+      const reason = document.getElementById('banReason').value;
       if (name && reason) {
         db.ref("bans/" + name).set({ reason, time: new Date().toLocaleString() });
         alert(`${name} has been banned.`);
-        loadBans();
       }
     }
 
     function unbanPlayer() {
-      const name = document.getElementById("unbanName").value;
+      const name = document.getElementById('unbanName').value;
       if (name) {
         db.ref("bans/" + name).remove();
         alert(`${name} has been unbanned.`);
-        loadBans();
       }
     }
 
-    function loadBans() {
-      const list = document.getElementById("banList");
+    function loadBanLogs() {
+      const list = document.getElementById("banLogList");
       list.innerHTML = "";
       db.ref("bans").once("value", snapshot => {
         const data = snapshot.val();
@@ -77,11 +140,11 @@
           Object.keys(data).forEach(player => {
             list.innerHTML += `<li class='bg-gray-700 p-2 rounded'>${player} - ${data[player].reason} <span class='text-gray-400'>(${data[player].time})</span></li>`;
           });
+        } else {
+          list.innerHTML = '<li class="text-gray-400">No bans found.</li>';
         }
       });
     }
-
-    loadBans();
   </script>
 </body>
 </html>
