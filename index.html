@@ -4,34 +4,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PrimeGuard Pro Dashboard</title>
+  <title>PrimeGuard Pro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app">
-    <!-- Sidebar -->
-    <aside>
+  <div class="container">
+    <aside class="sidebar">
       <h2>PrimeGuard</h2>
-      <nav>
-        <a href="#">Dashboard</a>
-        <a href="#">Ban Logs</a>
-        <a href="#">Player Manager</a>
-        <a href="#">Settings</a>
-      </nav>
+      <ul>
+        <li onclick="showSection('dashboard')">📊 Dashboard</li>
+        <li onclick="showSection('banlogs')">🚫 Ban Logs</li>
+        <li onclick="showSection('players')">👥 Player Manager</li>
+        <li onclick="showSection('settings')">⚙️ Settings</li>
+      </ul>
     </aside>
-
-    <!-- Main Panel -->
     <main>
       <header>
         <span>Welcome, Admin</span>
-        <button id="toggle-mode">🌓</button>
+        <button onclick="toggleMode()">🌓</button>
       </header>
-      <section>
-        <h1>Dashboard is under development</h1>
-        <p>Real-time data, charts, ban management and user roles will appear here.</p>
+      <section id="dashboard" class="page active">
+        <h1>Dashboard</h1>
+        <p>Stats, graphs and summaries.</p>
+      </section>
+      <section id="banlogs" class="page">
+        <h1>Ban Logs</h1>
+        <p>List of all bans with options.</p>
+      </section>
+      <section id="players" class="page">
+        <h1>Player Manager</h1>
+        <p>Manage users and permissions.</p>
+      </section>
+      <section id="settings" class="page">
+        <h1>Settings</h1>
+        <p>System configuration and preferences.</p>
       </section>
     </main>
   </div>
-  <script src="app.js" type="module"></script>
+  <script src="app.js"></script>
 </body>
 </html>
