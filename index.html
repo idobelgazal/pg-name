@@ -8,36 +8,53 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="layout">
     <aside class="sidebar">
       <h2>PrimeGuard</h2>
-      <ul>
-        <li onclick="showSection('dashboard')">📊 Dashboard</li>
-        <li onclick="showSection('banlogs')">🚫 Ban Logs</li>
-        <li onclick="showSection('players')">👥 Player Manager</li>
-        <li onclick="showSection('settings')">⚙️ Settings</li>
-      </ul>
+      <nav>
+        <a onclick="showSection('dashboard')">Dashboard</a>
+        <a onclick="showSection('players')">Players</a>
+        <a onclick="showSection('bans')">Ban Logs</a>
+        <a onclick="showSection('settings')">Settings</a>
+      </nav>
     </aside>
     <main>
       <header>
-        <span>Welcome, Admin</span>
-        <button onclick="toggleMode()">🌓</button>
+        <span>Server: PG Test Server</span>
+        <button onclick="alert('Logout')">Logout</button>
       </header>
-      <section id="dashboard" class="page active">
-        <h1>Dashboard</h1>
-        <p>Stats, graphs and summaries.</p>
+      <section id="dashboard" class="section active">
+        <h1>Total Bans: <span id="ban-count">72</span></h1>
       </section>
-      <section id="banlogs" class="page">
+      <section id="players" class="section">
+        <h1>Online Players</h1>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>SteamID</th><th>Actions</th><th>Ping</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>27</td>
+              <td>BRIAN T</td>
+              <td>steam:abc123</td>
+              <td>
+                <button>Ban</button>
+                <button>Kick</button>
+                <button>Warn</button>
+                <button>Screenshot</button>
+              </td>
+              <td>99</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section id="bans" class="section">
         <h1>Ban Logs</h1>
-        <p>List of all bans with options.</p>
+        <p>List of past bans...</p>
       </section>
-      <section id="players" class="page">
-        <h1>Player Manager</h1>
-        <p>Manage users and permissions.</p>
-      </section>
-      <section id="settings" class="page">
+      <section id="settings" class="section">
         <h1>Settings</h1>
-        <p>System configuration and preferences.</p>
+        <p>Preferences and configuration.</p>
       </section>
     </main>
   </div>
