@@ -1,14 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PrimeGuard Pro Final</title>
+  <title>PrimeGuard Pro Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1 style="font-family: sans-serif; margin-top: 30px; text-align: center;">
-    ✅ Final version is ready. Please unzip and upload to GitHub.
-  </h1>
-  <p style="text-align: center;">The dashboard includes all features: auth, bans, stats, roles, webhooks, and more.</p>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside>
+      <h2>PrimeGuard</h2>
+      <nav>
+        <a href="#">Dashboard</a>
+        <a href="#">Ban Logs</a>
+        <a href="#">Player Manager</a>
+        <a href="#">Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main Panel -->
+    <main>
+      <header>
+        <span>Welcome, Admin</span>
+        <button id="toggle-mode">🌓</button>
+      </header>
+      <section>
+        <h1>Dashboard is under development</h1>
+        <p>Real-time data, charts, ban management and user roles will appear here.</p>
+      </section>
+    </main>
+  </div>
+  <script src="app.js" type="module"></script>
 </body>
 </html>
